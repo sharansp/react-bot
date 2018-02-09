@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import './App.css';
-// import ReactBotUI from 'react-bot-ui';
 import {ApiAiClient} from "api-ai-javascript";
+import Header from './components/Header';
+import Dialog from './components/Dialog';
+import Input from './components/Input';
+import '../css/main.css';
 
 class App extends Component {
   render() {  
@@ -15,12 +18,16 @@ class App extends Component {
           .catch((error) => {console.log(error)/* do something here too */})
           
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-       
+      <div className="container" style={this.state.isVisible ? {display: 'block'} : {display: 'none'}}>
+        <Header title={this.state.title}
+                onClick={this.handleToggle} />
+        <div style={this.state.isOpen ? {minHeight: `${this.state.dialogHeight}px`} : {maxHeight: 0, overflow: 'hidden'}}>
+          <Dialog messages={this.state.messages}
+                  isBotTyping={this.state.isBotTyping}
+                  isUserHidden={this.props.isUserHidden}
+                  dialogHeight={this.state.dialogHeight} />
+          <Input onSubmit={this.handleSubmitText} />
+        </div>
       </div>
     );
   }
