@@ -5,7 +5,10 @@ import {ApiAiClient} from "api-ai-javascript";
 import Header from './components/Header';
 import Dialog from './components/Dialog';
 import Input from './components/Input';
+import HanaFetch from './model/HanaFetch';
 import './css/main.css';
+import { connect } from 'react-redux'
+
 
 const BOT_DELAY = 4000;
 const BOT_SPEED = 0.03;
@@ -21,18 +24,19 @@ class App extends Component {
 
   constructor(props) {
     super(props);
+    this.HanaFetch = HanaFetch;
     if (props.dialogflow) {
       this.dialogflow = new ApiAiClient(props.dialogflow);
     }
     this.botQueue = [];
     this.isProcessingQueue = false;
-    this.state = {
-      title: props.title || 'React Bot UI',
-      messages: [],
-      isBotTyping: false,
-      isOpen: props.isOpen !== undefined ? props.isOpen : true,
-      isVisible: props.isVisible !== undefined ? props.isVisible : true
-    };
+    // this.state = {
+    //   title: props.title || 'React Bot UI',
+    //   messages: [],
+    //   isBotTyping: false,
+    //   isOpen: props.isOpen !== undefined ? props.isOpen : true,
+    //   isVisible: props.isVisible !== undefined ? props.isVisible : true
+    // };
 
     this.appendMessage = this.appendMessage.bind(this);
     this.processBotQueue = this.processBotQueue.bind(this);
@@ -61,6 +65,7 @@ class App extends Component {
   }
 
   processResponse(text) {
+     text="wait buddy....";
     const messages = text
       .match(/[^.!?]+[.!?]*/g)
       .map(str => str.trim());
@@ -72,9 +77,53 @@ class App extends Component {
   }
 
   getResponse(text) {
+    var self =this;
     return this.dialogflow.textRequest(text)
-      .then(data => data.result.fulfillment.speech);
+      .then(data => {
+        debugger;
+        console.info(self);
+      if( data.result.metadata.intentName=="StockAvailability" ){
+        let oHanaFetch = new self.HanaFetch();
+        let hanaData = oHanaFetch.getHanaresponse(data);
+        return hanaData;
+        }else{
+          return data.result.fulfillment.speech
+        }
+        
+      });
   }
+
+  /* getHanaresponse(){
+    debugger;
+    let hanaPromise = new Promise((resolve, reject) => {
+      debugger
+      fetch("https://facebook.github.io/react-native/docs/network.html")
+      .then(res => {
+        debugger
+        resolve(res);
+        //res.json()
+      })
+      .then(
+        (result) => {
+          debugger
+          resolve(result);
+        },
+        (error) => {
+          debugger;
+          reject(error);
+        }
+      )
+    });
+    
+    hanaPromise.then((successMessage) => {
+      debugger
+      console.log("Yay! " + successMessage);
+    }, (e)=>{console.log(e)});
+
+    debugger;
+    
+    return hanaPromise;
+  } */
 
   handleSubmitText(text) {
 
@@ -127,7 +176,7 @@ class App extends Component {
   render() {  
     //8bf5ded5496e4b528209b96b2d3b12d8 ; stock available of 2C00020C-ROH in plant US45
     //26c99218affc4a08ae8ba1f520cd3a02 ; stock availibility for 108510-BULK in Warehouse W001
-    // const client = new ApiAiClient({accessToken: '8bf5ded5496e4b528209b96b2d3b12d8'});
+    // const client = new ApiAiClwient({accessToken: '8bf5ded5496e4b528209b96b2d3b12d8'});
     // console.info(client);
     // client.textRequest('Hello!')
     //       .then((response) => {console.log(response)/* do something */})
@@ -137,7 +186,7 @@ class App extends Component {
   } */
     return (
       <div className="container" style={this.state.isVisible ? {display: 'block'} : {display: 'none'}}>
-        <Header title='Merlin AI'
+        <Header title={this.props.title}
                 onClick={this.handleToggle} />
                 
                 
@@ -152,6 +201,14 @@ class App extends Component {
       </div>
     );
   }
+  
 }
-
-export default App;
+function mapStateToProps (state,props){
+  return {
+    title: props.title || 'React Bot UI',
+    isBotTyping: state.isBotTyping,
+    isOpen: props.isOpen !== undefined ? props.isOpen : true,
+  isVisible: props.isVisible !== undefined ? props.isVisible : true
+  } 
+}
+export default connect(mapStateToProps)(App);
