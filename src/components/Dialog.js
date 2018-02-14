@@ -44,8 +44,7 @@ class Dialog extends Component {
 					{groups.map((group, i) =>
 						<DialogGroup
 							key={i}
-							group={group}
-							isUserHidden={this.props.isUserHidden} />
+							group={group}/>
 					)}
 					<div
 						style={{ float: "left", clear: "both" }}

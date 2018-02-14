@@ -2,8 +2,7 @@ import React, {Component} from 'react';
 
 const Message = (props) => (
 	<div
-		className="message"
-		style={props.isImageHidden ? {margin: 0} : {}}>
+		className="message">
 		{props.text === null ? <TypingAnimation/> : <p>{props.text}</p>}
 	</div>
 );
@@ -30,8 +29,7 @@ class DialogGroup extends Component {
 		const messages = this.props.group.messages.map((text, i) => (
 			<Message
 				key={i}
-				text={text}
-				isImageHidden={this.props.group.isUser && this.props.isUserHidden} />
+				text={text} />
 		));
 
 		return (

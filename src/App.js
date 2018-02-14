@@ -25,18 +25,19 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.HanaFetch = HanaFetch;
+    this.dialogHeightMax = 350;
     if (props.dialogflow) {
       this.dialogflow = new ApiAiClient(props.dialogflow);
     }
     this.botQueue = [];
     this.isProcessingQueue = false;
-    // this.state = {
-    //   title: props.title || 'React Bot UI',
-    //   messages: [],
-    //   isBotTyping: false,
-    //   isOpen: props.isOpen !== undefined ? props.isOpen : true,
-    //   isVisible: props.isVisible !== undefined ? props.isVisible : true
-    // };
+    this.state = {
+      title: props.title || 'React Bot UI',
+      messages: [],
+      isBotTyping: false,
+      isOpen: props.isOpen !== undefined ? props.isOpen : true,
+      isVisible: props.isVisible !== undefined ? props.isVisible : true
+    };
 
     this.appendMessage = this.appendMessage.bind(this);
     this.processBotQueue = this.processBotQueue.bind(this);
@@ -186,15 +187,14 @@ class App extends Component {
   } */
     return (
       <div className="container" style={this.state.isVisible ? {display: 'block'} : {display: 'none'}}>
-        <Header title={this.props.title}
+        <Header title='title'
                 onClick={this.handleToggle} />
                 
                 
    
-        <div style={this.state.isOpen ? {minHeight: `${this.state.dialogHeight}px`} : {maxHeight: 0, overflow: 'hidden'}}>
+        <div  style={this.state.isOpen ? {minHeight: `${this.state.dialogHeight}px`} : {maxHeight: 0, overflow: 'hidden'}}>
           <Dialog messages={this.state.messages}
                   isBotTyping={this.state.isBotTyping}
-                  isUserHidden={this.props.isUserHidden}
                   dialogHeight={this.state.dialogHeight} />
           <Input onSubmit={this.handleSubmitText} />
         </div>
@@ -203,12 +203,5 @@ class App extends Component {
   }
   
 }
-function mapStateToProps (state,props){
-  return {
-    title: props.title || 'React Bot UI',
-    isBotTyping: state.isBotTyping,
-    isOpen: props.isOpen !== undefined ? props.isOpen : true,
-  isVisible: props.isVisible !== undefined ? props.isVisible : true
-  } 
-}
-export default connect(mapStateToProps)(App);
+
+export default App
