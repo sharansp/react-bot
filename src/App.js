@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-//import logo from './logo.svg';
 import './App.css';
 import {ApiAiClient} from "api-ai-javascript";
 import Header from './components/Header';
@@ -13,6 +12,9 @@ import { connect } from 'react-redux'
 const BOT_DELAY = 4000;
 const BOT_SPEED = 0.03;
 const BOT_MAX_CHARS = 150;
+const TITLE = 'Merlin Bot';
+const DIALOG_HEIGHT_MAX = 350;
+
 
 function getBotDelay(msg, isQuick = false) {
   let delay = isQuick ? BOT_DELAY / 2 : BOT_DELAY;
@@ -25,14 +27,13 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.HanaFetch = HanaFetch;
-    this.dialogHeightMax = 350;
+    
     if (props.dialogflow) {
       this.dialogflow = new ApiAiClient(props.dialogflow);
     }
     this.botQueue = [];
     this.isProcessingQueue = false;
     this.state = {
-      title: props.title || 'React Bot UI',
       messages: [],
       isBotTyping: false,
       isOpen: props.isOpen !== undefined ? props.isOpen : true,
@@ -94,38 +95,6 @@ class App extends Component {
       });
   }
 
-  /* getHanaresponse(){
-    debugger;
-    let hanaPromise = new Promise((resolve, reject) => {
-      debugger
-      fetch("https://facebook.github.io/react-native/docs/network.html")
-      .then(res => {
-        debugger
-        resolve(res);
-        //res.json()
-      })
-      .then(
-        (result) => {
-          debugger
-          resolve(result);
-        },
-        (error) => {
-          debugger;
-          reject(error);
-        }
-      )
-    });
-    
-    hanaPromise.then((successMessage) => {
-      debugger
-      console.log("Yay! " + successMessage);
-    }, (e)=>{console.log(e)});
-
-    debugger;
-    
-    return hanaPromise;
-  } */
-
   handleSubmitText(text) {
 
     // append user text
@@ -151,8 +120,8 @@ class App extends Component {
     let dialogHeight = y - header.offsetHeight - input.offsetHeight;
     if (dialogHeight < 0 || !dialogHeight) {
       dialogHeight = 0;
-    } else if (this.props.dialogHeightMax && dialogHeight > this.props.dialogHeightMax) {
-      dialogHeight = this.props.dialogHeightMax;
+    } else if (DIALOG_HEIGHT_MAX && dialogHeight > DIALOG_HEIGHT_MAX) {
+      dialogHeight = DIALOG_HEIGHT_MAX;
     }
     this.setState({dialogHeight});
   }
@@ -187,11 +156,8 @@ class App extends Component {
   } */
     return (
       <div className="container" style={this.state.isVisible ? {display: 'block'} : {display: 'none'}}>
-        <Header title='title'
+        <Header title={this.props.title || TITLE}
                 onClick={this.handleToggle} />
-                
-                
-   
         <div  style={this.state.isOpen ? {minHeight: `${this.state.dialogHeight}px`} : {maxHeight: 0, overflow: 'hidden'}}>
           <Dialog messages={this.state.messages}
                   isBotTyping={this.state.isBotTyping}
