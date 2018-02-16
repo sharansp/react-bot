@@ -14,8 +14,7 @@ ReactDOM.render(
   
     <App dialogflow={{accessToken: '8bf5ded5496e4b528209b96b2d3b12d8'}}
     isVisible={true}
-    ref={el => this.chat = el} />
- ,
+    ref={el => this.chat = el} />,
   document.getElementById('root')
 )
 registerServiceWorker();

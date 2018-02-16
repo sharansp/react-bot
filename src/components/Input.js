@@ -22,7 +22,7 @@ class Input extends Component {
 	handleChange(e) {
 		const value = e.target.value;
 		if (value.length >= 256) {
-			alert('You have reached 256 character limit!');
+			alert('Bsdk Limit mai raho');
 		}
 		this.setState({value});
 	}

@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import './App.css';
-import {ApiAiClient} from "api-ai-javascript";
+// import {ApiAiClient} from "api-ai-javascript";
+import ApiAiClient from './lib/dialogflow';
 import Header from './components/Header';
 import Dialog from './components/Dialog';
 import Input from './components/Input';
 import HanaFetch from './model/HanaFetch';
 import './css/main.css';
 import { connect } from 'react-redux'
+import axios from 'axios';
 
 
 const BOT_DELAY = 4000;
@@ -67,7 +69,7 @@ class App extends Component {
   }
 
   processResponse(text) {
-     text="wait buddy....";
+     //text="wait buddy....";
     const messages = text
       .match(/[^.!?]+[.!?]*/g)
       .map(str => str.trim());
@@ -82,11 +84,10 @@ class App extends Component {
     var self =this;
     return this.dialogflow.textRequest(text)
       .then(data => {
-        debugger;
         console.info(self);
-      if( data.result.metadata.intentName=="StockAvailability" ){
+      if( data.result.metadata.intentName=="StockAvailability" && !data.result.actionIncomplete){
         let oHanaFetch = new self.HanaFetch();
-        let hanaData = oHanaFetch.getHanaresponse(data);
+         let hanaData = oHanaFetch.getResponse(data.result.metadata.intentName);
         return hanaData;
         }else{
           return data.result.fulfillment.speech

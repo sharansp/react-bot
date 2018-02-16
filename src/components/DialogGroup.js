@@ -34,7 +34,7 @@ class DialogGroup extends Component {
 
 		return (
 			<div className={`group group-${this.props.group.isUser ? 'user' : 'bot'}`}>
-				M:
+				{image}
 				{messages}
 			</div>
 		);
