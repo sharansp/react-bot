@@ -5,10 +5,9 @@ import ApiAiClient from './lib/dialogflow';
 import Header from './components/Header';
 import Dialog from './components/Dialog';
 import Input from './components/Input';
-import HanaFetch from './model/HanaFetch';
+import getHanaResponse,{getOutputMsg,getHanaUrl} from './model/HanaFetch';
 import './css/main.css';
 import { connect } from 'react-redux'
-import axios from 'axios';
 
 
 const BOT_DELAY = 4000;
@@ -28,8 +27,6 @@ class App extends Component {
 
   constructor(props) {
     super(props);
-    this.HanaFetch = HanaFetch;
-    
     if (props.dialogflow) {
       this.dialogflow = new ApiAiClient(props.dialogflow);
     }
@@ -70,10 +67,13 @@ class App extends Component {
 
   processResponse(text) {
      //text="wait buddy....";
-    const messages = text
-      .match(/[^.!?]+[.!?]*/g)
-      .map(str => str.trim());
-    this.botQueue = this.botQueue.concat(messages);
+    if(typeof text=='object'){
+      text = getOutputMsg(text.intentName,text.data);
+    }
+    // const messages = text
+    //   .match(/[^.!?]+[.!?]*/g)
+    //   .map(str => str.trim());
+    this.botQueue = this.botQueue.concat(text.trim());
 
     // start processing bot queue
     const isQuick = !this.state.isBotTyping;
@@ -85,10 +85,12 @@ class App extends Component {
     return this.dialogflow.textRequest(text)
       .then(data => {
         console.info(self);
-      if( data.result.metadata.intentName=="StockAvailability" && !data.result.actionIncomplete){
-        let oHanaFetch = new self.HanaFetch();
-         let hanaData = oHanaFetch.getResponse(data.result.metadata.intentName);
-        return hanaData;
+      if(!data.result.actionIncomplete){
+        let hanaUrl = getHanaUrl(data);
+        if(hanaUrl){
+          return getHanaResponse(data.result.metadata.intentName,hanaUrl);
+        }
+        return data.result.fulfillment.speech;
         }else{
           return data.result.fulfillment.speech
         }
